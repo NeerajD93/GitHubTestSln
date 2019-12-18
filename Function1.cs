@@ -15,7 +15,7 @@ namespace GitHubTestSln
         {
              log.Info("C# HTTP trigger function processed a request.");
 
-            // parse query parameter
+            /*// parse query parameter
             string name = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
                 .Value;
@@ -24,11 +24,11 @@ namespace GitHubTestSln
             dynamic data = await req.Content.ReadAsStringAsync();
 
             // Set name to query string or body data
-            name = name ?? data?.name;
+            name = name ?? data?.name; */
 
-            return name == null
-                ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+            //return name == null
+              //  ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
+           return req.CreateResponse(HttpStatusCode.OK, "Hello ");
         }
     }
 }
