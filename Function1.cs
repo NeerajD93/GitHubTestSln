@@ -13,23 +13,35 @@ namespace GitHubTestSln
         [FunctionName("TestFunction")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
-
-            // parse query parameter
-            string name = req.GetQueryNameValuePairs()
-                .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
-                .Value;
-
-            if (name == null)
+             log.Info("C# HTTP trigger function processed a request.");
+     string result = "- -";
+            if (req.Content.IsMimeMultipartContent())
             {
-                // Get request body
-                dynamic data = await req.Content.ReadAsMultipartAsync<object>();
-                name = data?.name;
+                var provider = new MultipartMemoryStreamProvider();
+                req.Content.ReadAsMultipartAsync(provider).Wait();
+                foreach (HttpContent ctnt in provider.Contents)
+                {
+                    //now read individual part into STREAM
+                     var stream = ctnt.ReadAsStreamAsync();
+                     return req.CreateResponse(HttpStatusCode.OK, "Stream Length " + stream.Result.Length);
+
+                        using (var ms = new MemoryStream())
+                        {
+                            //do something with the stream
+                        }
+
+                }
+            }
+            if (req.Content.IsFormData())
+            {
+                NameValueCollection col = req.Content.ReadAsFormDataAsync().Result;
+                return req.CreateResponse(HttpStatusCode.OK, $" {col[0]}");
             }
 
-            return name == null
-                ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+            // dynamic data = await req.Content.ReadAsFormDataAsync();
+
+            // Fetching the name from the path parameter in the request URL
+            return req.CreateResponse(HttpStatusCode.OK, "Doesn't get anything " + result);
         }
     }
 }
