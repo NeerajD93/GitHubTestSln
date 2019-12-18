@@ -28,7 +28,7 @@ namespace GitHubTestSln
 
             //return name == null
               //  ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-           return req.CreateResponse(HttpStatusCode.OK, "Hello ");
+           return req.CreateResponse(HttpStatusCode.OK, "Hi");
         }
     }
 }
