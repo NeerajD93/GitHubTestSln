@@ -25,16 +25,11 @@ namespace GitHubTestSln
                      var stream = ctnt.ReadAsStreamAsync();
                      return req.CreateResponse(HttpStatusCode.OK, "Stream Length " + stream.Result.Length);
 
-                        using (var ms = new MemoryStream())
-                        {
-                            //do something with the stream
-                        }
-
                 }
             }
             if (req.Content.IsFormData())
             {
-                NameValueCollection col = req.Content.ReadAsFormDataAsync().Result;
+                var col = req.Content.ReadAsFormDataAsync().Result;
                 return req.CreateResponse(HttpStatusCode.OK, $" {col[0]}");
             }
 
