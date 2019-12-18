@@ -14,29 +14,21 @@ namespace GitHubTestSln
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
              log.Info("C# HTTP trigger function processed a request.");
-     string result = "- -";
-            if (req.Content.IsMimeMultipartContent())
-            {
-                var provider = new MultipartMemoryStreamProvider();
-                req.Content.ReadAsMultipartAsync(provider).Wait();
-                foreach (HttpContent ctnt in provider.Contents)
-                {
-                    //now read individual part into STREAM
-                     var stream = ctnt.ReadAsStreamAsync();
-                     return req.CreateResponse(HttpStatusCode.OK, "Stream Length " + stream.Result.Length);
 
-                }
-            }
-            if (req.Content.IsFormData())
-            {
-                var col = req.Content.ReadAsFormDataAsync().Result;
-                return req.CreateResponse(HttpStatusCode.OK, $" {col[0]}");
-            }
+            // parse query parameter
+            string name = req.GetQueryNameValuePairs()
+                .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
+                .Value;
 
-            // dynamic data = await req.Content.ReadAsFormDataAsync();
+            // Get request body
+            dynamic data = await req.Content.ReadAsStringAsync();
 
-            // Fetching the name from the path parameter in the request URL
-            return req.CreateResponse(HttpStatusCode.OK, "Doesn't get anything " + result);
+            // Set name to query string or body data
+            name = name ?? data?.name;
+
+            return name == null
+                ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
+                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
         }
     }
 }
