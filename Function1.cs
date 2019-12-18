@@ -23,7 +23,7 @@ namespace GitHubTestSln
             if (name == null)
             {
                 // Get request body
-                dynamic data = await req.Content.ReadAsAsync<object>();
+                dynamic data = await req.Content.ReadAsMultipartAsync<object>();
                 name = data?.name;
             }
 
